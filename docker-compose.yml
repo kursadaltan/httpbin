@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  httpbin:
+    image: kennethreitz/httpbin
+    ports:
+      - "8080:80"
+    networks:
+      - coolify-swarm
+    deploy:
+      replicas: 2
+      placement:
+        max_replicas_per_node: 1
+      restart_policy:
+        condition: on-failure
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.httpbin.rule=Host(`httpbin.local`)
+      - traefik.http.routers.httpbin.entrypoints=web
+      - traefik.http.services.httpbin.loadbalancer.server.port=80
+
+networks:
+  coolify-swarm:
+    external: true
